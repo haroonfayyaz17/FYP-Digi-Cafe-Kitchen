@@ -1,0 +1,82 @@
+body {
+    font-family: Arial;
+    margin: 0;
+}
+
+.header {
+    text-align: center;
+    background: #f38518;
+    color: white;
+    font-size: 55px;
+    font-family: cursive;
+    font-weight: bolder;
+    overflow: hidden;
+    padding: 10px 5px;
+}
+
+.header .row {
+    display: inline-block;
+    font-size: 45px;  
+}
+
+.header img {
+    font-size: 45px;
+    width: 135px;
+    height: 130px;
+    left: 50px;
+    display: inline-block;
+    
+}
+
+.header h1 {
+    display: inline-block;
+    font-size: 45px;
+    top: 180px;
+    left: 12px;
+    text-align: center;
+}
+
+.header h4 {
+    font-size: 30px;
+    top: 180px;
+    left: 12px;
+    text-align: center;
+}
+
+body {
+
+    font-family: cursive;
+}
+
+table, th, td {
+    border: 0.75px solid black;
+    text-align: center;
+}
+
+table {
+    width: 90%;
+    font-size: 27px;
+    margin: auto;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+th{
+  text-align: center;   
+}
+
+.prepareBtn{
+    margin-bottom: 3px;
+}
+
+
+
+
+tbody [rowspan],
+tbody [rowspan] ~ th,
+tbody [rowspan] ~ td,
+tfoot {
+  border-bottom: 5px solid #f38518;
+}
+
+
