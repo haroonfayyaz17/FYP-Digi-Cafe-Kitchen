@@ -32,8 +32,8 @@ $(document).ready(function() {
         currentDate.setDate(currentDate.getDate() + 1);
 
         var orders = [];
-        console.log(previous);
-        console.log(currentDate);
+        // console.log(previous);
+        // console.log(currentDate);
         let ordersRef = await db.collection("Orders")
             .where("status", "==", 'pending')
             .where("dateTime", ">=", previous).where("dateTime", "<", currentDate)
@@ -193,7 +193,9 @@ $(document).ready(function() {
             }
 
         });
+        console.log(tokenID+" "+personName);
         if (tokenID != null && personName != null) {
+            console.log('sent');
             var api = new Firebase_Messaging();
             var body = "Hi! " + personName + ". Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.";
             api.sendMsg("Order Prepared!", body, "eFjShBqRQ9OdbuZMXFQp1d:APA91bHoPzstd6Yxu6WF_SNzG8HOfF3siWm5zEAmoDlu89_RoV_UzwAK19gQA2YrQc1fAPUAPs3aabPwvu8ixonDfEjGPLKbWikFEKnH9mXoGmjnMCjf8ExGBorJE2z9tEqg_MnRyEMZ");
