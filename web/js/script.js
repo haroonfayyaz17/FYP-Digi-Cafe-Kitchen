@@ -12,28 +12,21 @@ $(document).ready(function() {
         measurementId: "G-D72VM43NBK"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    // firebase.analytics();
     const db = firebase.firestore();
 
     async function fetchData() {
-        // var currentDate=new Date(Date.now()).setHours( 0,0,0,0 );
         var currentDate = new Date(Date.now());
 
         currentDate.setHours(0, 0, 0);
         var previous = new Date();
         previous.setHours(0, 0, 0);
-        // console.log(currentDate);
         previous.setDate(currentDate.getDate());
-        // console.log(previous);
 
-        // var currentDate=new Date(Date.now()).toDateString();
         currentDate.setDate(currentDate.getDate() + 1);
 
         var orders = [];
-        // console.log(previous);
-        // console.log(currentDate);
+
         let ordersRef = await db.collection("Orders")
             .where("status", "==", 'pending')
             .where("dateTime", ">=", previous).where("dateTime", "<", currentDate)
@@ -46,51 +39,42 @@ $(document).ready(function() {
             var orderObj = new Order(doc.id, orderDoc['orderNo']);
 
             let itemsRef = await db.collection("Orders").doc(doc.id).collection("Items").get();
-            // console.log(querySnapshot2.size);
             for (var doc2 of itemsRef.docs) {
-                // console.log(`${doc2.id} => ${doc2.data()}`);
                 var ItemDataFB = doc2.data();
                 var qty = ItemDataFB['quantity'];
-                var docRef = await db.collection("Food Menu").doc("All").collection("Foods").doc(doc2.id);
-                await docRef.get().then(function(doc) {
-                    if (doc.exists) {
-                        var foodData = doc.data();
-                        // console.log(foodData['name']+' '+orderDoc['orderNo']);
+                console.log(qty);
+                var docRef = await db.collection("Food Menu").doc(doc2.id);
+                await docRef.get().then(function(doc1) {
+                    if (doc1.exists) {
+                        var foodData = doc1.data();
                         var foodObj = new FoodItem(foodData['name'], qty);
                         orderObj.addOrderItem(foodObj);
                     } else {
-                        // doc.data() will be undefined in this ca
                         console.log("No such document!");
                     }
                 });
             }
             orders.push(orderObj);
-            // console.log(order['dateTime']+' '+order['status']);
 
         }
-        // console.log('6');
         createTable(orders);
 
     }
 
     function createTableHeaders() {
-        var tableHeader = "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Action</th></tr>";
-        return tableHeader;
+        return "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Action</th></tr>";
     }
 
     function createOrderNoRow(start, itemsCount, orderNo, end) {
-        var orderNo = start + "<td rowspan='" + itemsCount + "'>" + orderNo + "</td>" + end;
-        return orderNo;
+        return start + "<td rowspan='" + itemsCount + "'>" + orderNo + "</td>" + end;
     }
 
     function createNameAndQty(start, text, end) {
-        var text1 = start + "<td>" + text + "</td>" + end;
-        return text1;
+        return start + "<td>" + text + "</td>" + end;
     }
 
     function createTableButton(start, itemsCount, id, end) {
-        var button = start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' data-id7='" + id + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
-        return button;
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' data-id7='" + id + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
     }
 
     function createTable(orders) {
@@ -98,20 +82,19 @@ $(document).ready(function() {
         var tableHeader = createTableHeaders();
         var tableContent = ''
         tableContent += tableStart + tableHeader;
-        var rowsData = "";
-        for (var i = 0; i < orders.length; i++) {
-            var itemsCount = orders[i].foodItems.length;
-            var orderNo = createOrderNoRow("<tr>", itemsCount, orders[i].orderNo, '');
+        for (let order of orders) {
+            var itemsCount = order.foodItems.length;
+            var orderNo = createOrderNoRow("<tr>", itemsCount, order.orderNo, '');
             tableContent += orderNo;
-            for (var j = 0; j < orders[i].foodItems.length; j++) {
+            for (var j = 0; j < order.foodItems.length; j++) {
 
-                var item = orders[i].foodItems[j];
+                var item = order.foodItems[j];
                 var itemName = createNameAndQty('', item.name, '');
                 var itemQty = createNameAndQty('', item.quantity, '');
                 if (j == 0) {
                     tableContent += itemName + itemQty;
 
-                    tableContent += createTableButton('', itemsCount, orders[i].id, '</tr>');
+                    tableContent += createTableButton('', itemsCount, order.id, '</tr>');
                 } else {
                     tableContent += "<tr>" + itemName + itemQty + "</tr>"
                 }
@@ -129,11 +112,7 @@ $(document).ready(function() {
         currentDate.setHours(0, 0, 0);
         var previous = new Date();
         previous.setHours(0, 0, 0);
-        // console.log(currentDate);
         previous.setDate(currentDate.getDate());
-        // console.log(previous);
-
-        // var currentDate=new Date(Date.now()).toDateString();
         currentDate.setDate(currentDate.getDate() + 1);
 
 
@@ -161,7 +140,6 @@ $(document).ready(function() {
 
     $(document).on('click', '.prepareBtn', async function() {
         var id = $(this).data("id7");
-        var db = firebase.firestore();
 
         await db.collection("Orders").doc(id).update({ status: "prepared" });
         var cusID;
@@ -193,7 +171,6 @@ $(document).ready(function() {
             }
 
         });
-        console.log(tokenID+" "+personName);
         if (tokenID != null && personName != null) {
             console.log('sent');
             var api = new Firebase_Messaging();
