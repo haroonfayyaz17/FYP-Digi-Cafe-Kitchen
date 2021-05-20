@@ -15,6 +15,31 @@ $(document).ready(function() {
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    async function addVoucher(orderAmount, date, personID) {
+        var done = false;
+
+        await db.collection('Voucher').add({
+                "title": 'Order Cancellation Voucher',
+                "validity": date,
+                'discount': orderAmount,
+                'minimumSpend': 0,
+            })
+            .then(async function(docRef) {
+                var id = docRef.id;
+                await db.collection('Person').doc(personID).collection('Voucher').doc(id).set({
+                    'usedOn': 'null',
+                });
+                done = true;
+            })
+            .catch(function(error) {
+
+                done = false;
+            });
+        return done;
+
+    }
+
+
     async function fetchData() {
         var currentDate = new Date(Date.now());
 
@@ -33,24 +58,20 @@ $(document).ready(function() {
             .orderBy("dateTime").limit(5)
             .get();
         for (var doc of ordersRef.docs) {
-            console.log(`${doc.id} => ${doc.data()}`);
             var orderDoc = doc.data();
 
-            var orderObj = new Order(doc.id, orderDoc['orderNo']);
+            var orderObj = new Order(doc.id, orderDoc['orderNo'], orderDoc['amount'], orderDoc['uid']);
 
             let itemsRef = await db.collection("Orders").doc(doc.id).collection("Items").get();
             for (var doc2 of itemsRef.docs) {
                 var ItemDataFB = doc2.data();
                 var qty = ItemDataFB['quantity'];
-                console.log(qty);
                 var docRef = await db.collection("Food Menu").doc(doc2.id);
                 await docRef.get().then(function(doc1) {
                     if (doc1.exists) {
                         var foodData = doc1.data();
                         var foodObj = new FoodItem(foodData['name'], qty);
                         orderObj.addOrderItem(foodObj);
-                    } else {
-                        console.log("No such document!");
                     }
                 });
             }
@@ -73,12 +94,12 @@ $(document).ready(function() {
         return start + "<td>" + text + "</td>" + end;
     }
 
-    function createPrepareButton(start, itemsCount, id, end) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id7='" + id + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
+    function createPrepareButton(start, itemsCount, id, end, cusID) {
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id7='" + id + "' data-id6='" + cusID + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
     }
 
-    function createCancelButton(start, itemsCount, id, end) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='cancelButton' data-id8='" + id + "'  class='btn btn-danger prepareBtn'>Cancel</button>" + "</td>" + end;
+    function createCancelButton(start, itemsCount, id, end, amount) {
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='cancelButton' data-id8='" + id + "' data-id9='" + amount + "'  class='btn btn-danger prepareBtn'>Cancel</button>" + "</td>" + end;
     }
 
     function createTable(orders) {
@@ -98,8 +119,8 @@ $(document).ready(function() {
                 if (j == 0) {
                     tableContent += itemName + itemQty;
 
-                    tableContent += createPrepareButton('', itemsCount, order.id, '');
-                    tableContent += createCancelButton('', itemsCount, order.id, '</tr>');
+                    tableContent += createPrepareButton('', itemsCount, order.id, '', order.cusID);
+                    tableContent += createCancelButton('', itemsCount, order.id, '</tr>', order.amount);
 
                 } else {
                     tableContent += "<tr>" + itemName + itemQty + "</tr>"
@@ -128,38 +149,20 @@ $(document).ready(function() {
             .orderBy("dateTime")
             .onSnapshot(function(snapshot) {
                 snapshot.docChanges().forEach(function(change) {
-                    if (change.type === "added") {
-                        fetchData();
-                        return;
-                    }
-                    if (change.type === "modified") {
-                        fetchData();
-                        return;
-                    }
-                    if (change.type === "removed") {
-                        fetchData();
-                        return;
-                    }
+                    fetchData();
+                    // if (change.type === "added") {
+                    //     fetchData();
+                    // } else if (change.type === "modified") {
+                    //     fetchData();
+                    // } else if (change.type === "removed") {
+                    //     fetchData();
+                    // }
                 });
             });
     }
 
-    async function sendNotificationToUser(id, msg, title) {
+    async function sendNotificationToUser(id, msg, title, cusID) {
 
-        var cusID;
-        var docRef = await db.collection("Orders").doc(id);
-        await docRef.get().then(function(doc) {
-            if (doc.exists) {
-                var orderData = doc.data();
-                if (orderData != null) {
-                    cusID = orderData['uid'];
-                }
-            } else {
-                // doc.data() will be undefined in this ca
-                console.log("cusId");
-            }
-
-        });
         var personName, tokenID;
         var docRef1 = await db.collection("Person").doc(cusID);
         await docRef1.get().then(function(doc) {
@@ -169,14 +172,10 @@ $(document).ready(function() {
                     personName = personData['Name'];
                     tokenID = personData['tokenID'];
                 }
-            } else {
-                // doc.data() will be undefined in this ca
-                console.log("person");
             }
 
         });
         if (tokenID != null && personName != null) {
-            console.log('sent');
             var api = new Firebase_Messaging();
             var body = "Hi! " + personName + ". " + msg;
             api.sendMsg(title, body, tokenID);
@@ -185,21 +184,29 @@ $(document).ready(function() {
         fetchData();
     }
 
+
+
     $(document).on('click', '#cancelButton', async function() {
         var id = $(this).data("id8");
+        var amount = $(this).data("id9");
 
+        var cusID = $('#prepareButton').data("id6");
+        var currentDate = new Date(Date.now());
+
+        currentDate.setHours(0, 0, 0);
+        currentDate.setMonth(currentDate.getMonth() + 6);
         await db.collection("Orders").doc(id).update({ status: "cancelled" });
-        sendNotificationToUser(id, 'We are extremely sorry that we had to cancel your order due to some reasons. We appologise for any inconvenience caused to you.\nThe amount of this order will be refuned as a voucher to you and you can utilize it in your future orders', 'Order Cancelled!');
-
+        sendNotificationToUser(id, 'We are extremely sorry that we had to cancel your order due to some reasons. We appologise for any inconvenience caused to you.\nThe amount of this order will be refuned as a voucher to you and you can utilize it within 6 months on your future orders', 'Order Cancelled!', cusID);
+        addVoucher(amount, currentDate, cusID);
     });
 
 
 
     $(document).on('click', '#prepareButton', async function() {
         var id = $(this).data("id7");
-
+        var cusID = $(this).data('id6');
         await db.collection("Orders").doc(id).update({ status: "prepared" });
-        sendNotificationToUser(id, 'Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.', 'Order Prepared!');
+        sendNotificationToUser(id, 'Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.', 'Order Prepared!', cusID);
     });
 
     fetchData();

@@ -1,11 +1,13 @@
 class Order {
-  constructor(id,orderNo) {
-  	this.id=id;
-  	this.orderNo=orderNo;
-    this.foodItems = [];
-  }
+    constructor(id, orderNo, amount, cusID) {
+        this.id = id;
+        this.orderNo = orderNo;
+        this.amount = amount;
+        this.cusID = cusID;
+        this.foodItems = [];
+    }
 
-  addOrderItem(foodItem){
-  	this.foodItems.push(foodItem);
-  }
+    addOrderItem(foodItem) {
+        this.foodItems.push(foodItem);
+    }
 }
