@@ -5,13 +5,17 @@ body {
 
 .header {
     text-align: center;
-    background: #BD752A;
+    background: #bd752a;
     color: white;
     font-size: 55px;
     font-family: cursive;
     font-weight: bolder;
     overflow: hidden;
     padding: 10px 5px;
+}
+
+.headerT {
+    top: 120px;
 }
 
 .header .row {
