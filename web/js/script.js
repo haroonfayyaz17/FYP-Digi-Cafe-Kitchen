@@ -62,7 +62,7 @@ $(document).ready(function() {
     }
 
     function createTableHeaders() {
-        return "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Action</th></tr>";
+        return "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Prepare</th><th>Cancel</th></tr>";
     }
 
     function createOrderNoRow(start, itemsCount, orderNo, end) {
@@ -73,8 +73,12 @@ $(document).ready(function() {
         return start + "<td>" + text + "</td>" + end;
     }
 
-    function createTableButton(start, itemsCount, id, end) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' data-id7='" + id + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
+    function createPrepareButton(start, itemsCount, id, end) {
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id7='" + id + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
+    }
+
+    function createCancelButton(start, itemsCount, id, end) {
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='cancelButton' data-id8='" + id + "'  class='btn btn-danger prepareBtn'>Cancel</button>" + "</td>" + end;
     }
 
     function createTable(orders) {
@@ -94,7 +98,9 @@ $(document).ready(function() {
                 if (j == 0) {
                     tableContent += itemName + itemQty;
 
-                    tableContent += createTableButton('', itemsCount, order.id, '</tr>');
+                    tableContent += createPrepareButton('', itemsCount, order.id, '');
+                    tableContent += createCancelButton('', itemsCount, order.id, '</tr>');
+
                 } else {
                     tableContent += "<tr>" + itemName + itemQty + "</tr>"
                 }
@@ -138,10 +144,8 @@ $(document).ready(function() {
             });
     }
 
-    $(document).on('click', '.prepareBtn', async function() {
-        var id = $(this).data("id7");
+    async function sendNotificationToUser(id, msg, title) {
 
-        await db.collection("Orders").doc(id).update({ status: "prepared" });
         var cusID;
         var docRef = await db.collection("Orders").doc(id);
         await docRef.get().then(function(doc) {
@@ -174,11 +178,28 @@ $(document).ready(function() {
         if (tokenID != null && personName != null) {
             console.log('sent');
             var api = new Firebase_Messaging();
-            var body = "Hi! " + personName + ". Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.";
-            api.sendMsg("Order Prepared!", body, tokenID);
+            var body = "Hi! " + personName + ". " + msg;
+            api.sendMsg(title, body, tokenID);
         }
 
         fetchData();
+    }
+
+    $(document).on('click', '#cancelButton', async function() {
+        var id = $(this).data("id8");
+
+        await db.collection("Orders").doc(id).update({ status: "cancelled" });
+        sendNotificationToUser(id, 'We are extremely sorry that we had to cancel your order due to some reasons. We appologise for any inconvenience caused to you.\nThe amount of this order will be refuned as a voucher to you and you can utilize it in your future orders', 'Order Cancelled!');
+
+    });
+
+
+
+    $(document).on('click', '#prepareButton', async function() {
+        var id = $(this).data("id7");
+
+        await db.collection("Orders").doc(id).update({ status: "prepared" });
+        sendNotificationToUser(id, 'Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.', 'Order Prepared!');
     });
 
     fetchData();

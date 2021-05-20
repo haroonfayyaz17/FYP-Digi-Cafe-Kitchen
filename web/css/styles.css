@@ -5,7 +5,7 @@ body {
 
 .header {
     text-align: center;
-    background: #f38518;
+    background: #BD752A;
     color: white;
     font-size: 55px;
     font-family: cursive;
@@ -16,7 +16,7 @@ body {
 
 .header .row {
     display: inline-block;
-    font-size: 45px;  
+    font-size: 45px;
 }
 
 .header img {
@@ -25,7 +25,6 @@ body {
     height: 130px;
     left: 50px;
     display: inline-block;
-    
 }
 
 .header h1 {
@@ -44,11 +43,12 @@ body {
 }
 
 body {
-
     font-family: cursive;
 }
 
-table, th, td {
+table,
+th,
+td {
     border: 0.75px solid black;
     text-align: center;
 }
@@ -61,22 +61,17 @@ table {
     border-collapse: collapse;
 }
 
-th{
-  text-align: center;   
+th {
+    text-align: center;
 }
 
-.prepareBtn{
+.prepareBtn {
     margin-bottom: 3px;
 }
 
-
-
-
 tbody [rowspan],
-tbody [rowspan] ~ th,
-tbody [rowspan] ~ td,
+tbody [rowspan]~th,
+tbody [rowspan]~td,
 tfoot {
-  border-bottom: 5px solid #f38518;
+    border-bottom: 5px solid #f38518;
 }
-
-
