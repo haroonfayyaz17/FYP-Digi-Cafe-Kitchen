@@ -14,10 +14,6 @@ body {
     padding: 10px 5px;
 }
 
-.headerT {
-    top: 120px;
-}
-
 .header .row {
     display: inline-block;
     font-size: 45px;
@@ -31,11 +27,19 @@ body {
     display: inline-block;
 }
 
+.img-circle {
+    background-color: white;
+    width: 155px;
+    height: 145px;
+    text-align: center;
+    padding-top: 5px;
+    padding-left: 20px;
+    display: inline-flex;
+}
+
 .header h1 {
     display: inline-block;
     font-size: 45px;
-    top: 180px;
-    left: 12px;
     text-align: center;
 }
 
