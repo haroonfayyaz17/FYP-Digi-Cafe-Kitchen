@@ -78,60 +78,12 @@ $(document).ready(function() {
             orders.push(orderObj);
 
         }
-        createTable(orders);
+        var table = new Table();
+        table.createTable(orders);
 
     }
 
-    function createTableHeaders() {
-        return "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Prepare</th><th>Cancel</th></tr>";
-    }
 
-    function createOrderNoRow(start, itemsCount, orderNo, end) {
-        return start + "<td rowspan='" + itemsCount + "'>" + orderNo + "</td>" + end;
-    }
-
-    function createNameAndQty(start, text, end) {
-        return start + "<td>" + text + "</td>" + end;
-    }
-
-    function createPrepareButton(start, itemsCount, id, end, cusID) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id7='" + id + "' data-id6='" + cusID + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
-    }
-
-    function createCancelButton(start, itemsCount, id, end, amount) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='cancelButton' data-id8='" + id + "' data-id9='" + amount + "'  class='btn btn-danger prepareBtn'>Cancel</button>" + "</td>" + end;
-    }
-
-    function createTable(orders) {
-        var tableStart = "<table>";
-        var tableHeader = createTableHeaders();
-        var tableContent = ''
-        tableContent += tableStart + tableHeader;
-        for (let order of orders) {
-            var itemsCount = order.foodItems.length;
-            var orderNo = createOrderNoRow("<tr>", itemsCount, order.orderNo, '');
-            tableContent += orderNo;
-            for (var j = 0; j < order.foodItems.length; j++) {
-
-                var item = order.foodItems[j];
-                var itemName = createNameAndQty('', item.name, '');
-                var itemQty = createNameAndQty('', item.quantity, '');
-                if (j == 0) {
-                    tableContent += itemName + itemQty;
-
-                    tableContent += createPrepareButton('', itemsCount, order.id, '', order.cusID);
-                    tableContent += createCancelButton('', itemsCount, order.id, '</tr>', order.amount);
-
-                } else {
-                    tableContent += "<tr>" + itemName + itemQty + "</tr>"
-                }
-            }
-
-        }
-        var tableEnd = "</table>";
-        tableContent += tableEnd;
-        $('#content').html(tableContent);
-    }
 
     function loadData() {
         var currentDate = new Date(Date.now());
