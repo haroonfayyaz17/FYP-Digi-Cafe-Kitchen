@@ -19,21 +19,17 @@ body {
     font-size: 45px;
 }
 
-.header img {
-    font-size: 45px;
-    width: 135px;
-    height: 130px;
-    left: 50px;
-    display: inline-block;
-}
 
 .img-circle {
+    font-size: 45px;
     background-color: white;
     width: 155px;
     height: 145px;
     text-align: center;
     padding-top: 5px;
-    padding-left: 20px;
+    left: 50px;
+    padding-left: 35px;
+    padding-bottom: 10px;
     display: inline-flex;
 }
 
