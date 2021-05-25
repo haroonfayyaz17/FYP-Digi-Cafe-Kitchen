@@ -11,7 +11,7 @@ class OrderDBController {
 
         await this.db.collection('Voucher').add({
                 "title": 'Order Cancellation Voucher',
-                "validity": date,
+                "validity": date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear(),
                 'discount': orderAmount,
                 'minimumSpend': 0,
             })
