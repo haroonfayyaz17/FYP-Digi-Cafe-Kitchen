@@ -8,8 +8,8 @@ class OrderDBController {
 
     async addVoucher(orderAmount, date, personID) {
         var done = false;
-
-        await this.db.collection('Voucher').add({
+        var obj = this;
+        await obj.db.collection('Voucher').add({
                 "title": 'Order Cancellation Voucher',
                 "validity": date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear(),
                 'discount': orderAmount,
@@ -17,7 +17,7 @@ class OrderDBController {
             })
             .then(async function(docRef) {
                 var id = docRef.id;
-                await this.db.collection('Person').doc(personID).collection('Voucher').doc(id).set({
+                await obj.db.collection('Person').doc(personID).collection('Voucher').doc(id).set({
                     'usedOn': 'null',
                 });
                 done = true;
