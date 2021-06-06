@@ -12,8 +12,8 @@ class Table {
         return start + "<td>" + text + "</td>" + end;
     }
 
-    createPrepareButton(start, itemsCount, id, end, cusID) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id7='" + id + "' data-id6='" + cusID + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
+    createPrepareButton(start, itemsCount, id, end, cusID, time) {
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id7='" + id + "' data-id6='" + cusID + "' data-id5='" + time + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
     }
 
     createCancelButton(start, itemsCount, id, end, amount) {
@@ -37,7 +37,7 @@ class Table {
                 if (j == 0) {
                     tableContent += itemName + itemQty;
 
-                    tableContent += this.createPrepareButton('', itemsCount, order.id, '', order.cusID);
+                    tableContent += this.createPrepareButton('', itemsCount, order.id, '', order.cusID, order.orderTime);
                     tableContent += this.createCancelButton('', itemsCount, order.id, '</tr>', order.amount);
 
                 } else {

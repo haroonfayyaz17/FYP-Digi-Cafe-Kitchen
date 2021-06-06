@@ -51,7 +51,7 @@ class OrderDBController {
         for (var doc of ordersRef.docs) {
             var orderDoc = doc.data();
 
-            var orderObj = new Order(doc.id, orderDoc['orderNo'], orderDoc['amount'], orderDoc['uid']);
+            var orderObj = new Order(doc.id, orderDoc['orderNo'], orderDoc['amount'], orderDoc['dateTime'].toDate(), orderDoc['uid']);
 
             let itemsRef = await this.db.collection("Orders").doc(doc.id).collection("Items").get();
             for (var doc2 of itemsRef.docs) {
@@ -74,7 +74,74 @@ class OrderDBController {
 
     }
 
+    async updateSale(dTime, amount) {
+        var done = false;
+        var time = new Date(dTime);
+        var date = time.getDate();
+        var month = time.getMonth();
+        var year = time.getFullYear();
+        var dtOrder =
+            new Date(year, month, date, 0, 0, 0, 0, 0);
+        await this.updateSaleDocuments('Date', date + '-' + month + '-' + year, amount, dtOrder)
+            .then((value) => {
+                done = value;
+            });
 
+        dtOrder = new Date(year, month, 1, 0, 0, 0, 0, 0);
+        await this.updateSaleDocuments(
+                'Month', month + '-' + year, amount, dtOrder)
+            .then((value) => {
+                done = value;
+            });
+        dtOrder = new Date(year, 1, 1, 0, 0, 0, 0, 0);
+        await this.updateSaleDocuments('Year', year + '', amount, dtOrder)
+            .then((value) => {
+                done = value;
+            });
+        return done;
+    }
+
+    async updateSaleDocuments(timeSpan, docId, amount, orderTime) {
+        var obj = this;
+        var doc = await obj.db
+            .collection('Sales')
+            .doc('All Sales')
+            .collection(timeSpan)
+            .doc(docId)
+            .get().catch(function(error) {
+                return false;
+            });
+        if (!doc.exists) {
+            await obj.db
+                .collection('Sales')
+                .doc('All Sales')
+                .collection(timeSpan)
+                .doc(docId)
+                .set({
+                    'totalOrders': 1,
+                    'totalAmount': amount.toString(),
+                    'date': orderTime
+                }).catch(function(error) {
+                    return false;
+                });
+        } else {
+            var currentSales = parseInt(doc.data['totalAmount'].toString());
+            var currentOrders = parseInt(doc.data['totalOrders'].toString());
+            currentOrders++;
+            currentSales += amount;
+            await obj.db
+                .collection('Sales')
+                .doc('All Sales')
+                .collection(timeSpan)
+                .doc(docId)
+                .update({
+                    'totalOrders': currentOrders,
+                    'totalAmount': currentSales,
+                });
+            return true;
+        }
+
+    }
 
     loadData() {
         var currentDate = new Date(Date.now());
@@ -129,7 +196,6 @@ class OrderDBController {
 
     async changeOrderStatus(id, oStatus) {
         await this.db.collection("Orders").doc(id).update({ status: oStatus });
-
     }
 
 }

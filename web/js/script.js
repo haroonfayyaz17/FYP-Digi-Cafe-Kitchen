@@ -8,6 +8,8 @@ $(document).ready(function() {
         var amount = $(this).data("id9");
 
         var cusID = $('#prepareButton').data("id6");
+        var time = $('#prepareButton').data("id5");
+
         var currentDate = new Date(Date.now());
 
         currentDate.setHours(0, 0, 0);
@@ -20,8 +22,13 @@ $(document).ready(function() {
     $(document).on('click', '#prepareButton', async function() {
         var id = $(this).data("id7");
         var cusID = $(this).data('id6');
+        var time = $(this).data("id5");
+        var amount = $('#cancelButton').data("id9");
+
+
         await oDB.changeOrderStatus(id, "prepared");
         oDB.sendNotificationToUser(id, 'Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.', 'Order Prepared!', cusID);
+        await oDB.updateSale(time, parseInt(amount));
     });
 
     var oDB = new OrderDBController();
