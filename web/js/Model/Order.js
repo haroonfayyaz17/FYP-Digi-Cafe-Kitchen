@@ -6,6 +6,7 @@ class Order {
         this.cusID = cusID;
         this.orderTime = orderTime;
         this.foodItems = [];
+        this.delivery = '';
     }
 
     addOrderItem(foodItem) {

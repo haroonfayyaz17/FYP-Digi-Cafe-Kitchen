@@ -52,7 +52,10 @@ class OrderDBController {
             var orderDoc = doc.data();
 
             var orderObj = new Order(doc.id, orderDoc['orderNo'], orderDoc['amount'], orderDoc['dateTime'].toDate(), orderDoc['uid']);
-
+            orderObj.delivery = 'Pick Up';
+            if (orderDoc['deliverToOffice']) {
+                orderObj.delivery = await this.getdeliveryLocationData(orderObj.cusID);
+            }
             let itemsRef = await this.db.collection("Orders").doc(doc.id).collection("Items").get();
             for (var doc2 of itemsRef.docs) {
                 var ItemDataFB = doc2.data();
@@ -72,6 +75,38 @@ class OrderDBController {
         var table = new Table();
         table.createTable(orders);
 
+    }
+
+    async updateStock(orderID) {
+        var obj = this;
+        await obj.db.collection("Orders")
+            .doc(orderID)
+            .get().then(async function(doc1) {
+                if (doc1.exists) {
+                    let itemsRef = await obj.db.collection("Orders").doc(doc1.id).collection("Items").get();
+                    for (var doc2 of itemsRef.docs) {
+                        var ItemDataFB = doc2.data();
+                        var qty = ItemDataFB['quantity'];
+                        await obj.db.collection("Food Menu").doc(doc2.id).get().then(async function(doc3) {
+                            await obj.db.collection("Food Menu").doc(doc2.id).update({ "stockLeft": doc3.data()['stockLeft'] + qty });
+                        });
+                    }
+
+                }
+            });
+    }
+
+    async getdeliveryLocationData(cusID) {
+        var text = '';
+        await this.db.collection("Faculty").doc(cusID)
+            .get().then(function(doc1) {
+
+                if (doc1.exists) {
+                    var facData = doc1.data();
+                    text = facData['department'] + ', ' + facData['office'];
+                }
+            });
+        return text;
     }
 
     async updateSale(dTime, amount) {
@@ -125,8 +160,8 @@ class OrderDBController {
                     return false;
                 });
         } else {
-            var currentSales = parseInt(doc.data['totalAmount'].toString());
-            var currentOrders = parseInt(doc.data['totalOrders'].toString());
+            var currentSales = parseInt(doc.data()['totalAmount'].toString());
+            var currentOrders = parseInt(doc.data()['totalOrders'].toString());
             currentOrders++;
             currentSales += amount;
             await obj.db
