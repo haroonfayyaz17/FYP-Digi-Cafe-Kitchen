@@ -103,7 +103,7 @@ class OrderDBController {
 
                 if (doc1.exists) {
                     var facData = doc1.data();
-                    text = facData['department'] + ', ' + facData['office'];
+                    text = facData['office'];
                 }
             });
         return text;
