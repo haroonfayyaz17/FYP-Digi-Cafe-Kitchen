@@ -12,8 +12,9 @@ class OrderDBController {
         await obj.db.collection('Voucher').add({
                 "title": 'Order Cancellation Voucher',
                 "validity": date.getDate() + "-" + date.getMonth() + "-" + date.getFullYear(),
-                'discount': orderAmount,
+                'discount': parseInt(orderAmount),
                 'minimumSpend': 0,
+                'cancel': true
             })
             .then(async function(docRef) {
                 var id = docRef.id;
