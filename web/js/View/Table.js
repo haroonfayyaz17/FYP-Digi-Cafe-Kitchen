@@ -38,7 +38,7 @@ class Table {
                 if (j == 0) {
                     tableContent += itemName + itemQty;
                     tableContent += this.createNameAndQty('', order.delivery, '');
-                    tableContent += this.createPrepareButton('', itemsCount, order.id, '', order.cusID, order.orderTime);
+                    tableContent += this.createPrepareButton('', itemsCount, order.id, '', order.cusID, order.orderTime, order.delivery);
                     tableContent += this.createCancelButton('', itemsCount, order.id, '</tr>', order.amount);
 
                 } else {

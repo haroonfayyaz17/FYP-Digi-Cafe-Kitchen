@@ -27,7 +27,6 @@ $(document).ready(function() {
         var time = $(this).data("time");
         var amount = $('#cancelButton').data("amount");
         var dType = $(this).data("type");
-
         if (dType == 'Pick Up')
             await oDB.changeOrderStatus(id, "prepared");
         else
