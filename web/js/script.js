@@ -26,11 +26,15 @@ $(document).ready(function() {
         var time = $(this).data("time");
         var amount = $('#cancelButton').data("amount");
         var dType = $(this).data("type");
-        if (dType == 'Pick Up')
+        var msg = "";
+        if (dType == 'Pick Up') {
             await oDB.changeOrderStatus(id, "prepared");
-        else
+            msg = "Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.";
+        } else {
             await oDB.changeOrderStatus(id, "past");
-        oDB.sendNotificationToUser(id, 'Feeling Hungry!\nYour wait is over\nHead towards the counter to get your meal.', 'Order Prepared!', cusID);
+            msg = "Feeling Hungry!\nYour wait is over\nWe will deliver your order shortly at your given location";
+        }
+        oDB.sendNotificationToUser(id, msg, 'Order Prepared!', cusID);
         await oDB.updateSale(time, parseInt(amount));
     });
 
