@@ -8,10 +8,10 @@ $(document).ready(function() {
         var amount = $(this).data("amount");
 
 
-        var cusID = $('#prepareButton').data("cusID");
+        var cusID = $('#prepareButton').data("cusid");
 
         var currentDate = new Date(Date.now());
-
+console.log(cusID);
         currentDate.setHours(0, 0, 0);
         currentDate.setMonth(currentDate.getMonth() + 6);
         await oDB.changeOrderStatus(id, "cancelled");
