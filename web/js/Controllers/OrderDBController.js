@@ -18,8 +18,7 @@ class OrderDBController {
             })
             .then(async function(docRef) {
                 var id = docRef.id;
-                console.log(id);
-                console.log(personID);
+               
                 await obj.db.collection('Person').doc(personID).collection('Voucher').doc(id).set({
                     'usedOn': 'null',
                 });
