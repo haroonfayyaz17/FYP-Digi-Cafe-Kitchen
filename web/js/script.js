@@ -22,7 +22,7 @@ $(document).ready(function() {
 
     $(document).on('click', '#prepareButton', async function() {
         var id = $(this).data("id");
-        var cusID = $(this).data('cusID');
+        var cusID = $(this).data('cusid');
         var time = $(this).data("time");
         var amount = $('#cancelButton').data("amount");
         var dType = $(this).data("type");

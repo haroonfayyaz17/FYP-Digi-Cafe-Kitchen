@@ -14,7 +14,7 @@ class Table {
 
 
     createPrepareButton(start, itemsCount, id, end, cusID, time, deliveryType) {
-        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id='" + id + "' data-cusID='" + cusID + "' data-time='" + time + "' data-type='" + deliveryType + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
+        return start + "<td rowspan='" + itemsCount + "'>" + "<button type='button' id='prepareButton' data-id='" + id + "' data-cusid='" + cusID + "' data-time='" + time + "' data-type='" + deliveryType + "'  class='btn btn-success prepareBtn'>Prepared</button>" + "</td>" + end;
     }
 
     createCancelButton(start, itemsCount, id, end, amount) {
