@@ -1,16 +1,19 @@
 class Table {
 
     createTableHeaders() {
-        return "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Delivery Type</th><th>Prepare</th><th>Cancel</th></tr>";
+        return "<tr><th>Order Number</th><th>Ordered Items</th><th>Order Quantity</th><th>Delivery/Pick Up</th><th>Prepare</th><th>Cancel</th></tr>";
     }
 
     createOrderNoRow(start, itemsCount, orderNo, end) {
         return start + "<td class='firstCol' rowspan='" + itemsCount + "'>" + orderNo + "</td>" + end;
     }
 
-    createNameAndQty(start, cssClass, text, end) {
-        console.log(start + "<td class ='" + cssClass + "'>" + text + "</td>" + end);
-        return start + "<td class ='" + cssClass + "'>" + text + "</td>" + end;
+    createNameAndQty(start, cssClass, rowSpan, text, end) {
+        if (rowSpan != '')
+            return start + "<td class ='" + cssClass + "'rowspan='" + rowSpan + "'>" + text + "</td>" + end;
+        else
+            return start + "<td class ='" + cssClass + "'>" + text + "</td>" + end;
+
     }
 
 
@@ -41,11 +44,11 @@ class Table {
                     cssClass = 'footT';
                 else
                     cssClass = 'midT';
-                var itemName = this.createNameAndQty('', cssClass, item.name, '');
-                var itemQty = this.createNameAndQty('', cssClass, item.quantity, '');
+                var itemName = this.createNameAndQty('', cssClass, '', item.name, '');
+                var itemQty = this.createNameAndQty('', cssClass, '', item.quantity, '');
                 if (j == 0) {
                     tableContent += itemName + itemQty;
-                    tableContent += this.createNameAndQty('', cssClass, order.delivery, '');
+                    tableContent += this.createNameAndQty('', cssClass, itemsCount, order.delivery, '');
                     tableContent += this.createPrepareButton('', itemsCount, order.id, '', order.cusID, order.orderTime, order.delivery);
                     tableContent += this.createCancelButton('', itemsCount, order.id, '</tr>', order.amount);
 
