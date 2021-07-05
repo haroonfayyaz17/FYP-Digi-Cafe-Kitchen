@@ -18,7 +18,7 @@ class OrderDBController {
             })
             .then(async function(docRef) {
                 var id = docRef.id;
-               
+
                 await obj.db.collection('Person').doc(personID).collection('Voucher').doc(id).set({
                     'usedOn': 'null',
                 });
@@ -58,6 +58,7 @@ class OrderDBController {
             if (orderDoc['deliverToOffice']) {
                 orderObj.delivery = await this.getdeliveryLocationData(orderObj.cusID);
             }
+            orderObj.delivery = 'Office # ' + orderObj.delivery;
             let itemsRef = await this.db.collection("Orders").doc(doc.id).collection("Items").get();
             for (var doc2 of itemsRef.docs) {
                 var ItemDataFB = doc2.data();

@@ -19,7 +19,6 @@ body {
     font-size: 45px;
 }
 
-
 .img-circle {
     font-size: 45px;
     background-color: white;
@@ -73,9 +72,30 @@ th {
     margin-bottom: 3px;
 }
 
-tbody [rowspan],
+
+/* tbody [rowspan],
 tbody [rowspan]~th,
-tbody [rowspan]~td,
+tbody [rowspan]~td, */
+
 tfoot {
     border-bottom: 5px solid #f38518;
+}
+
+.firstCol {
+    border-top: 5px solid #f38518;
+    border-bottom: 5px solid #f38518;
+}
+
+.headT {
+    border-top: 5px solid #f38518;
+    border-bottom: 5px solid #f38518;
+}
+
+.footT {
+    border-bottom: 5px solid #f38518;
+}
+
+.midT {
+    border-top: 5px solid #1e7e9b;
+    border-bottom: 5px solid #1e7e9b;
 }
